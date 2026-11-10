@@ -99,6 +99,9 @@ class Controls:
     standstill = abs(CS.vEgo) <= max(self.CP.minSteerSpeed, 0.3) or CS.standstill
     CC.latActive = self.sm['selfdriveState'].active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
                    (not standstill or self.CP.steerAtStandstill)
+    # Leapmotor stage-2 test build: openpilot's driving model never steers; only the scripted joystick test
+    # (joystickd, JoystickDebugMode) may. JoystickDebugMode is cleared at every boot and every offroad transition.
+    CC.latActive = False
     CC.longActive = CC.enabled and not any(e.overrideLongitudinal for e in self.sm['onroadEvents']) and self.CP.openpilotLongitudinalControl
 
     actuators = CC.actuators
