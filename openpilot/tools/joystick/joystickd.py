@@ -13,6 +13,9 @@ from openpilot.selfdrive.controls.lib.drive_helpers import should_stop
 
 LongCtrlState = car.CarControl.Actuators.LongControlState
 MAX_LAT_ACCEL = 3.0
+# Leapmotor stage-2 test build: for angle-controlled cars the steer axis is a fraction of a fixed steering-wheel angle,
+# so a test step means the same number of degrees at any speed (openpilot's and the panda's limits still apply)
+TEST_MAX_STEER_ANGLE_DEG = 90.0
 
 
 def joystickd_thread():
@@ -59,6 +62,8 @@ def joystickd_thread():
 
       actuators.torque = float(np.clip(joystick_axes[1], -1, 1))
       actuators.steeringAngleDeg, actuators.curvature = actuators.torque * max_angle, actuators.torque * -max_curvature
+      if CP.steerControlType == car.CarParams.SteerControlType.angle:
+        actuators.steeringAngleDeg = actuators.torque * TEST_MAX_STEER_ANGLE_DEG
 
     pm.send('carControl', cc_msg)
 
